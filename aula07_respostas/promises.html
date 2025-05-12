@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" href="style.css">
+
+<body>
+    <div id="demo">
+        <h1>XMLHttpRequest com Promises</h1>
+        <input type="text" name="cep" id="cep" placeholder="Digite seu CEP">
+        <button type="button" onclick="loadCep()">Pesquisar CEP</button>
+        <br>
+        <input type="text" id="logradouro" placeholder="Logradouro">
+        <br>
+        <input type="text" id="complemento" placeholder="Complemento">
+        <br>
+        <input type="text" id="bairro" placeholder="Bairro">
+        <br>
+        <input type="text" id="localidade" placeholder="Cidade">
+        <br>
+        <input type="text" id="uf" placeholder="UF">
+    </div>
+
+    <script>
+        function getCepInfo(cep) {
+            return new Promise((resolve, reject) => {
+                const xhttp = new XMLHttpRequest();
+                xhttp.open("GET", `https://viacep.com.br/ws/${cep}/json`);
+                xhttp.onload = () => {
+                    if (xhttp.status === 200) {
+                        resolve(JSON.parse(xhttp.responseText));
+                    } else {
+                        reject("Erro ao buscar CEP");
+                    }
+                };
+                xhttp.onerror = () => reject("Erro de rede");
+                xhttp.send();
+            });
+        }
+
+        function loadCep() {
+            const cep = document.getElementById("cep").value;
+            getCepInfo(cep)
+                .then(endereco => {
+                    document.getElementById("logradouro").value = endereco.logradouro;
+                    document.getElementById("complemento").value = endereco.complemento;
+                    document.getElementById("bairro").value = endereco.bairro;
+                    document.getElementById("localidade").value = endereco.localidade;
+                    document.getElementById("uf").value = endereco.uf;
+                })
+                .catch(error => console.error("Erro:", error));
+        }
+    </script>
+
+</body>
+
+</html>
